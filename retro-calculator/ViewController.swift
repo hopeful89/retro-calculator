@@ -16,7 +16,6 @@ class ViewController: UIViewController {
         case Multiply = "*"
         case Subtract = "-"
         case Add = "+"
-        case Equal = "="
         case Empty = "Empty"
     }
     
@@ -28,9 +27,11 @@ class ViewController: UIViewController {
     var leftValString = ""
     var rightValString = ""
     var currentOperation: Operation = Operation.Empty
+    var result = ""
 
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
         let path =
@@ -46,24 +47,81 @@ class ViewController: UIViewController {
 
     }
     
+    @IBAction func clearAll(btn: UIButton!){
+        leftValString = ""
+        rightValString = ""
+        outputLbl.text = "0"
+        result = ""
+        runningNumber = ""
+        currentOperation = Operation.Empty
+        
+    }
+    
     @IBAction func numberPressed(btn: UIButton!) {
-        btnSound.play()
+        playSound()
         runningNumber += "\(btn.tag)"
+        outputLbl.text = runningNumber
     }
     
     @IBAction func onDividePressed(sender: AnyObject) {
+        processOperation(Operation.Divide)
     }
    
     @IBAction func onMultiplyPressed(sender: AnyObject) {
+        processOperation(Operation.Multiply)
     }
     
     @IBAction func onSubtractPressed(sender: AnyObject) {
+        processOperation(Operation.Subtract)
     }
 
     @IBAction func onAddPressed(sender: AnyObject) {
+        processOperation(Operation.Add)
     }
 
     @IBAction func onEqualPressed(sender: AnyObject) {
+        processOperation(currentOperation)
+    }
+    
+    func processOperation(op: Operation){
+        playSound()
+        
+        if currentOperation != Operation.Empty {
+        //Run some math
+            
+            if runningNumber != "" {
+                rightValString = runningNumber
+                runningNumber = ""
+                
+                if currentOperation == Operation.Multiply{
+                    result = "\(Double(leftValString)! * Double(rightValString)!)"
+                }else if currentOperation == Operation.Divide{
+                    result = "\(Double(leftValString)! / Double(rightValString)!)"
+                }else if currentOperation == Operation.Subtract{
+                    result = "\(Double(leftValString)! - Double(rightValString)!)"
+                }else if currentOperation == Operation.Add{
+                    result = "\(Double(leftValString)! + Double(rightValString)!)"
+                }
+                
+                leftValString = result
+                outputLbl.text = result
+                
+            }
+
+            currentOperation = op
+            
+        }else{
+            leftValString = runningNumber
+            runningNumber = ""
+            currentOperation = op
+        }
+    }
+    
+    func playSound(){
+        if btnSound.playing{
+            btnSound.stop()
+        }
+        btnSound.play()
     }
 
 }
